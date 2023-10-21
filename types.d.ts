@@ -57,3 +57,9 @@ export type ProductData = {
     src: string;
     description: string;
 }
+
+declare global {
+    interface Window {
+      userId: string;  // this will be your variable name
+    }
+}
