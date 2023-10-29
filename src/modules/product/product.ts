@@ -3,6 +3,7 @@ import { View } from '../../utils/view';
 import { formatPrice } from '../../utils/helpers'
 import html from './product.tpl.html';
 import { ProductData } from 'types';
+import { userService } from '../../services/user.service';
 
 type ProductComponentParams = { [key: string]: any };
 
@@ -30,5 +31,31 @@ export class Product {
     this.view.price.innerText = formatPrice(salePriceU);
 
     if (this.params.isHorizontal) this.view.root.classList.add('is__horizontal')
+
+    const options = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.99
+    };
+    
+    const observer = new IntersectionObserver(this.handleIntersection, options);
+    observer.observe(this.view.root);
+  }
+
+  handleIntersection = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        this.sendEvent()
+        observer.unobserve(entry.target);
+      }
+    });
+  }
+
+  sendEvent(){
+    fetch(`/api/getProductSecretKey?id=${this.product.id}`)
+      .then((res) => res.json())
+      .then((secretKey) => {
+        userService.sendViewCard(this.product, secretKey, new Date(Date.now()))
+      });
   }
 }
