@@ -57,3 +57,15 @@ export type ProductData = {
     src: string;
     description: string;
 }
+
+export type userEvenentData = {
+    type: string,
+    payload: {
+        url?: string,
+        orderId?: number,
+        totalPrice?: number,
+        productIds?: Array<number>
+    }  |  ProductData & { secretKey?: string},
+
+    timestamp: Date,
+}
